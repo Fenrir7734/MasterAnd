@@ -1,0 +1,50 @@
+@Composable
+fun ProfileScreenInitial() {
+ val name = rememberSaveable { mutableStateOf("") }
+ Column(
+ modifier = Modifier
+ .fillMaxSize()
+ .padding(16.dp)
+ .verticalScroll(rememberScrollState()),
+ verticalArrangement = Arrangement.Center,
+ horizontalAlignment = Alignment.CenterHorizontally
+ ) {
+ Text(
+ text = "MasterAnd",
+ style = MaterialTheme.typography.displayLarge,
+ modifier = Modifier.padding(bottom = 48.dp)
+ )
+ Box {
+ Image(
+ //wymaga dodania ikony w katalogu /res/drawable
+ //(prawy przycisk | New | Vector asset)
+ painter = painterResource(
+ id = R.drawable.ic_baseline_question_mark_24),
+ contentDescription = "Profile photo",
+ modifier = Modifier
+ .size(100.dp)
+ .clip(CircleShape)
+ .align(Alignment.Center),
+ contentScale = ContentScale.Crop
+ )
+ }
+ Spacer(modifier = Modifier.height(16.dp))
+ OutlinedTextField(
+ modifier = Modifier.fillMaxWidth(),
+ value = name.value,
+ onValueChange = { name.value = it },
+ label = { Text("Name") },
+ singleLine = true,
+ isError = false,
+ keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+ supportingText = { Text("Name can't be empty") }
+ )
+ }
+}
+@Preview
+@Composable
+fun ProfileScreenInitialPreview() {
+ L02masterand_aTheme {
+ ProfileScreenInitial()
+ }
+}
