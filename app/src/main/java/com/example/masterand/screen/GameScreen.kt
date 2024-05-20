@@ -35,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +43,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.masterand.viewmodel.AppViewModelProvider
+import com.example.masterand.viewmodel.GameViewModel
+import kotlinx.coroutines.launch
+import okhttp3.internal.toLongOrDefault
 import java.util.Collections
 
 //@Composable
@@ -262,12 +268,13 @@ fun GameRow(
 }
 
 @Composable
-fun GameScreen(navController: NavController, colorCount: String, onLogoutClick: () -> Unit) {
+fun GameScreen(navController: NavController, colorCount: String, playerId: String, onLogoutClick: () -> Unit, viewModel: GameViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     val lColor = colorCount.toInt()
     var selectedColorsList by remember { mutableStateOf<List<List<Color>>>(listOf()) }
     var feedbackColorsList by remember { mutableStateOf<List<List<Color>>>(listOf()) }
     var attemptCount by remember { mutableStateOf(0) }
     var rows by remember { mutableStateOf(0) }
+    val coroutineScope = rememberCoroutineScope()
 
     val potentialColors =
         listOf(
@@ -355,7 +362,10 @@ fun GameScreen(navController: NavController, colorCount: String, onLogoutClick: 
             if (showWinMessage) {
                 item {
                     Button(onClick = {
-                        navController.navigate("ResultScreen/$attemptCount")
+                        coroutineScope.launch {
+                            viewModel.saveScore(playerId = playerId.toLongOrDefault(0), score = attemptCount)
+                            navController.navigate("ResultScreen/$attemptCount")
+                        }
                     }) {
                         Text(text = "High Score table")
                     }

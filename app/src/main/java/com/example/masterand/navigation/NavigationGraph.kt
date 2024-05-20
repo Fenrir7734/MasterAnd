@@ -40,7 +40,9 @@ fun NavigationGraph(navController: NavHostController) {
 
         composable(
             route = Screen.GameScreen.route,
-            arguments = listOf(navArgument("colorCount") { type = NavType.StringType }),
+            arguments = listOf(
+                navArgument("colorCount") { type = NavType.StringType },
+                navArgument("playerId") { type = NavType.StringType }),
             enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { fullWidth -> fullWidth },
@@ -55,9 +57,14 @@ fun NavigationGraph(navController: NavHostController) {
             }
         ) { navBackStackEntry ->
             val colorCount = navBackStackEntry.arguments?.getString("colorCount") ?: ""
-            GameScreen(navController = navController, colorCount = colorCount, onLogoutClick = {
-                navController.popBackStack()
-            })
+            val playerId = navBackStackEntry.arguments?.getString("playerId") ?: ""
+            GameScreen(
+                navController = navController,
+                colorCount = colorCount,
+                playerId = playerId,
+                onLogoutClick = {
+                    navController.popBackStack()
+                })
         }
 
         composable(

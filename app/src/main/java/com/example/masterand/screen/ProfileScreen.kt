@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,15 +52,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.masterand.R
+import com.example.masterand.viewmodel.AppViewModelProvider
+import com.example.masterand.viewmodel.ProfileViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     var name by remember { mutableStateOf<String?>(null) }
     var email by remember { mutableStateOf<String?>(null) }
     var numberOfColors by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     val infiniteTransition = rememberInfiniteTransition(label = "GameTitleAnimationInf")
     val scale by infiniteTransition.animateFloat(
@@ -119,10 +125,15 @@ fun ProfileScreen(navController: NavController) {
         )
         Button(
             onClick = {
-                navController.navigate("GameScreen/${numberOfColors}")
+                coroutineScope.launch {
+                    viewModel.email.value = email.orEmpty()
+                    viewModel.name.value = name.orEmpty()
+
+                    viewModel.savePlayer()
+                    navController.navigate("GameScreen/${numberOfColors}/${viewModel.playerId.value}")
+                }
             },
             modifier = Modifier.fillMaxWidth(),
-            //enabled = name.value != null && email.value != null && numberOfColors.value != null
             enabled = true
         ) {
             Text("Next")
