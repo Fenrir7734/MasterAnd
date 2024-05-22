@@ -43,40 +43,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.masterand.viewmodel.AppViewModelProvider
 import com.example.masterand.viewmodel.GameViewModel
 import kotlinx.coroutines.launch
 import okhttp3.internal.toLongOrDefault
 import java.util.Collections
-
-//@Composable
-//fun CheckCircularButton(
-//    onClick: () -> Unit,
-//    color: Color,
-//    enabled: Boolean = true,
-//    modifier: Modifier = Modifier,
-//) {
-//    Box(
-//        modifier = modifier
-//            .clip(CircleShape)
-//            .background(color)
-//            .size(50.dp)
-//            .clickable {
-//                if (enabled) {
-//                    onClick()
-//                }
-//            },
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Icon(
-//            imageVector = Icons.Default.Check,
-//            contentDescription = null,
-//            tint = Color.White
-//        )
-//    }
-//}
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -268,7 +240,7 @@ fun GameRow(
 }
 
 @Composable
-fun GameScreen(navController: NavController, colorCount: String, playerId: String, onLogoutClick: () -> Unit, viewModel: GameViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun GameScreen(navController: NavController, colorCount: String, playerId: String, onLogoutClick: () -> Unit, viewModel: GameViewModel = hiltViewModel()) {
     val lColor = colorCount.toInt()
     var selectedColorsList by remember { mutableStateOf<List<List<Color>>>(listOf()) }
     var feedbackColorsList by remember { mutableStateOf<List<List<Color>>>(listOf()) }

@@ -6,11 +6,11 @@ import com.example.masterand.database.repository.ScoresRepository
 import com.example.masterand.database.repository.impl.PlayersRepositoryImpl
 import com.example.masterand.database.repository.impl.ScoresRepositoryImpl
 
-class AppDataContainer(private val context: Context) : AppContainer {
-    override val playersRepository: PlayersRepository by lazy {
-        PlayersRepositoryImpl(HighScoreDatabase.getDatabase(context).playerDao())
-    }
-    override val scoresRepository: ScoresRepository by lazy {
-        ScoresRepositoryImpl(HighScoreDatabase.getDatabase(context).scoreDao())
-    }
-}
+//class AppDataContainer(private val context: Context) : AppContainer {
+//    override val playersRepository: PlayersRepository by lazy {
+//        PlayersRepositoryImpl(HighScoreDatabase.getDatabase(context).playerDao())
+//    }
+//    override val scoresRepository: ScoresRepository by lazy {
+//        ScoresRepositoryImpl(HighScoreDatabase.getDatabase(context).scoreDao())
+//    }
+//}

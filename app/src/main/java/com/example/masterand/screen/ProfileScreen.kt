@@ -52,16 +52,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.masterand.R
-import com.example.masterand.viewmodel.AppViewModelProvider
 import com.example.masterand.viewmodel.ProfileViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hiltViewModel()) {
     var name by remember { mutableStateOf<String?>(null) }
     var email by remember { mutableStateOf<String?>(null) }
     var numberOfColors by remember { mutableStateOf<String?>(null) }

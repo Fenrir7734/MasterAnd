@@ -19,12 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.masterand.viewmodel.AppViewModelProvider
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.masterand.viewmodel.ResultViewModel
 
 @Composable
-fun ResultScreen(score: String, onRestartGame: () -> Unit, onLogout: () -> Unit, viewModel: ResultViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun ResultScreen(score: String, onRestartGame: () -> Unit, onLogout: () -> Unit, viewModel: ResultViewModel = hiltViewModel()) {
     val scores by viewModel.scores.collectAsState(initial = emptyList())
 
     Column(
