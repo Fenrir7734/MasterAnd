@@ -316,20 +316,20 @@ fun GameScreen(navController: NavController, colorCount: String, playerId: Strin
                 )
             }
 
-            if (!showWinMessage) {
-                item {
-                    CrossCircularButton(
-                        onClick = {
-                            selectedColorsList = emptyList()
-                            feedbackColorsList = emptyList()
-                            attemptCount = 0
-                            clickable = true
-                        },
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                }
-            }
+//            if (!showWinMessage) {
+//                item {
+//                    CrossCircularButton(
+//                        onClick = {
+//                            if (selectedColorsList.isNotEmpty()) {
+//                                val lastSelectedColors = selectedColorsList.last().map { Color.White }
+//                                selectedColorsList = selectedColorsList.dropLast(1) + listOf(lastSelectedColors)
+//                            }
+//                        },
+//                        color = MaterialTheme.colorScheme.secondary,
+//                        modifier = Modifier.padding(top = 16.dp)
+//                    )
+//                }
+//            }
 
             if (showWinMessage) {
                 item {
