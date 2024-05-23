@@ -132,7 +132,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = isFormValid(name, email, numberOfColors)
+            //enabled = isFormValid(name, email, numberOfColors)'
         ) {
             Text("Next")
         }

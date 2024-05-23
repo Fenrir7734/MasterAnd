@@ -1,5 +1,6 @@
 package com.example.masterand.screen
 
+import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
@@ -26,7 +27,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -80,33 +80,6 @@ fun CheckCircularButton(
                 tint = Color.White
             )
         }
-    }
-}
-
-@Composable
-fun CrossCircularButton(
-    onClick: () -> Unit,
-    color: Color,
-    enabled: Boolean = true,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .clip(CircleShape)
-            .background(color)
-            .size(50.dp)
-            .clickable {
-                if (enabled) {
-                    onClick()
-                }
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.Clear,
-            contentDescription = null,
-            tint = Color.White
-        )
     }
 }
 
@@ -171,14 +144,22 @@ fun SelectableColorsRow(
 @Composable
 fun SmallCircle(
     targetColor: Color,
-    modifier: Modifier = Modifier
+    index: Int
 ) {
-    val animatedColor by animateColorAsState(targetValue = targetColor)
+    val initialColor = remember { Animatable(Color.White) }
+
+    LaunchedEffect(targetColor) {
+        kotlinx.coroutines.delay(200L * index)
+        initialColor.animateTo(
+            targetValue = targetColor,
+            animationSpec = tween(durationMillis = 500)
+        )
+    }
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .clip(CircleShape)
-            .background(animatedColor)
+            .background(initialColor.value)
             .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
             .size(30.dp)
     )
@@ -204,7 +185,8 @@ fun FeedbackCircles(
                 repeat(columns) { colIndex ->
                     val index = rowIndex * columns + colIndex
                     val color = feedbackColors.getOrElse(index) { Color.White }
-                    SmallCircle(targetColor = color)
+
+                    SmallCircle(targetColor = color, index = index)
                 }
             }
         }
@@ -335,23 +317,12 @@ fun GameScreen(
                 }
             }
 
-//            if (!showWinMessage) {
-//                item {
-//                    CrossCircularButton(
-//                        onClick = {
-//                            if (selectedColorsList.isNotEmpty()) {
-//                                val lastSelectedColors = selectedColorsList.last().map { Color.White }
-//                                selectedColorsList = selectedColorsList.dropLast(1) + listOf(lastSelectedColors)
-//                            }
-//                        },
-//                        color = MaterialTheme.colorScheme.secondary,
-//                        modifier = Modifier.padding(top = 16.dp)
-//                    )
-//                }
-//            }
-
             if (showWinMessage) {
                 item {
+                    LaunchedEffect(Unit) {
+                        rowVisible = true
+                    }
+
                     Button(onClick = {
                         coroutineScope.launch {
                             viewModel.saveScore(
@@ -393,8 +364,8 @@ fun selectNextAvailableColor(
 }
 
 fun selectRandomColors(availableColors: List<Color>): List<Color> {
-    return availableColors.shuffled().take(4)
-    //return listOf(Color.Red, Color.Blue, Color.DarkGray, Color.Green)
+    //return availableColors.shuffled().take(4)
+    return listOf(Color.Red, Color.Blue, Color.DarkGray, Color.Green)
 }
 
 fun checkColors(
