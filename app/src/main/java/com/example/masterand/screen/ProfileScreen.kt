@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -118,7 +117,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
             label = "Enter number or colors",
             errorLabel = "Number of colors must be between 5 and 10",
             keyboardType = KeyboardType.Number,
-            validator = { isNumberOfColorsValid(it) },
+            validator = { isNumberOfColorsInvalid(it) },
             setValue = { numberOfColors = it },
             getValue = { numberOfColors }
         )
@@ -133,7 +132,7 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel = hi
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = true
+            enabled = isFormValid(name, email, numberOfColors)
         ) {
             Text("Next")
         }
@@ -203,7 +202,10 @@ private fun ProfileImageWithPicker() {
         },
         modifier = Modifier.offset(x = 50.dp)
     ) {
-        Icon(Icons.Filled.Edit, contentDescription = "Select avatar")
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_image_search_24),
+            contentDescription = "Select avatar"
+        )
     }
 
     Box {
@@ -228,13 +230,16 @@ private fun ProfileImageWithPicker() {
     }
 }
 
+private fun isFormValid(name: String?, email: String?, colors: String?) =
+    !isNameInvalid(name) && !isEmailInvalid(email) && !isNumberOfColorsInvalid(colors);
+
 private fun isNameInvalid(value: String?) = value?.isEmpty() ?: false
 
 private fun isEmailInvalid(value: String?) = value?.let {
     !Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}").matches(it.ifEmpty { "" })
 } ?: true
 
-private fun isNumberOfColorsValid(value: String?): Boolean {
+private fun isNumberOfColorsInvalid(value: String?): Boolean {
     val value = value?.toIntOrNull()
     return value == null || value < 5 || value > 10
 }
