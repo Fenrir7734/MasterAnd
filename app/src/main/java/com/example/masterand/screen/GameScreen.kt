@@ -6,6 +6,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
@@ -240,7 +241,13 @@ fun GameRow(
 }
 
 @Composable
-fun GameScreen(navController: NavController, colorCount: String, playerId: String, onLogoutClick: () -> Unit, viewModel: GameViewModel = hiltViewModel()) {
+fun GameScreen(
+    navController: NavController,
+    colorCount: String,
+    playerId: String,
+    onLogoutClick: () -> Unit,
+    viewModel: GameViewModel = hiltViewModel()
+) {
     val lColor = colorCount.toInt()
     var selectedColorsList by remember { mutableStateOf<List<List<Color>>>(listOf()) }
     var feedbackColorsList by remember { mutableStateOf<List<List<Color>>>(listOf()) }
@@ -260,6 +267,7 @@ fun GameScreen(navController: NavController, colorCount: String, playerId: Strin
 
     val masterSequence by remember { mutableStateOf(selectRandomColors(availableColors)) }
     var showWinMessage by remember { mutableStateOf(false) }
+    var rowVisible by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -280,40 +288,51 @@ fun GameScreen(navController: NavController, colorCount: String, playerId: Strin
                 val selectedColors = selectedColorsList.getOrNull(index) ?: List(4) { Color.White }
                 val feedbackColors = feedbackColorsList.getOrNull(index) ?: List(4) { Color.White }
 
-                GameRow(
-                    selectedColors = selectedColors,
-                    feedbackColors = feedbackColors,
-                    onClick = { buttonIndex ->
-                        if (index == attemptCount && clickable) {
-                            selectedColorsList = selectedColorsList.toMutableList().apply {
-                                if (size <= index) add(List(4) { Color.White })
-                                this[index] = selectNextAvailableColor(
-                                    availableColors,
-                                    selectedColors,
-                                    buttonIndex
-                                )
+                LaunchedEffect(Unit) {
+                    rowVisible = true
+                }
+
+                AnimatedVisibility(
+                    visible = rowVisible,
+                    enter = expandVertically(expandFrom = Alignment.Top)
+                ) {
+                    GameRow(
+                        selectedColors = selectedColors,
+                        feedbackColors = feedbackColors,
+                        onClick = { buttonIndex ->
+                            if (index == attemptCount && clickable) {
+                                selectedColorsList = selectedColorsList.toMutableList().apply {
+                                    if (size <= index) add(List(4) { Color.White })
+                                    this[index] = selectNextAvailableColor(
+                                        availableColors,
+                                        selectedColors,
+                                        buttonIndex
+                                    )
+                                }
                             }
-                        }
-                    },
-                    onCheckClick = {
-                        if (index == attemptCount && clickable) {
-                            feedbackColorsList = feedbackColorsList.toMutableList().apply {
-                                if (size <= index) add(List(4) { Color.White })
-                                this[index] =
-                                    checkColors(selectedColors, masterSequence, Color.White)
+                        },
+                        onCheckClick = {
+                            if (index == attemptCount && clickable) {
+                                rowVisible = false
+                                feedbackColorsList = feedbackColorsList.toMutableList().apply {
+                                    if (size <= index) add(List(4) { Color.White })
+                                    this[index] =
+                                        checkColors(selectedColors, masterSequence, Color.White)
+                                }
+                                attemptCount++
+                                var isWinner =
+                                    feedbackColorsList.lastOrNull()?.all { it == Color.Red }
+                                        ?: false
+                                if (isWinner) {
+                                    showWinMessage = true
+                                } else {
+                                    rows++;
+                                }
                             }
-                            attemptCount++
-                            var isWinner =
-                                feedbackColorsList.lastOrNull()?.all { it == Color.Red } ?: false
-                            if (isWinner) {
-                                showWinMessage = true
-                            } else {
-                                rows++;
-                            }
-                        }
-                    },
-                    enabled = selectedColors.all { color -> color != Color.White } && index == attemptCount
-                )
+                        },
+                        enabled = selectedColors.all { color -> color != Color.White } && index == attemptCount
+                    )
+                }
             }
 
 //            if (!showWinMessage) {
@@ -335,7 +354,10 @@ fun GameScreen(navController: NavController, colorCount: String, playerId: Strin
                 item {
                     Button(onClick = {
                         coroutineScope.launch {
-                            viewModel.saveScore(playerId = playerId.toLongOrDefault(0), score = attemptCount)
+                            viewModel.saveScore(
+                                playerId = playerId.toLongOrDefault(0),
+                                score = attemptCount
+                            )
                             navController.navigate("ResultScreen/$attemptCount")
                         }
                     }) {
