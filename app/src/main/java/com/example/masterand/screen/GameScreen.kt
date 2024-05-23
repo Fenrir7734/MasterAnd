@@ -364,8 +364,8 @@ fun selectNextAvailableColor(
 }
 
 fun selectRandomColors(availableColors: List<Color>): List<Color> {
-    //return availableColors.shuffled().take(4)
-    return listOf(Color.Red, Color.Blue, Color.DarkGray, Color.Green)
+    return availableColors.shuffled().take(4)
+    //return listOf(Color.Red, Color.Blue, Color.DarkGray, Color.Green)
 }
 
 fun checkColors(
